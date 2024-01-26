@@ -1,4 +1,4 @@
-package com.example.application.views.helloworld;
+package com.example.application.views.comp;
 
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Key;
