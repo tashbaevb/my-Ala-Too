@@ -15,11 +15,14 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+import jakarta.annotation.security.PermitAll;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @PageTitle("Address Form")
 @Route(value = "address-form", layout = MainLayout.class)
+@PermitAll
 public class AddressFormView extends Composite<VerticalLayout> {
 
     public AddressFormView() {
