@@ -1,6 +1,7 @@
 package com.example.application.views.comp;
 
 import com.example.application.service.UserService;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.login.LoginForm;
@@ -29,8 +30,6 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
         login.setAction("");
 
-        add(new H1("Vaadin CRM"), login);
-
         login.addLoginListener(e -> auth(e.getUsername(), e.getPassword()));
         add(new H1("Vaadin CRM"), login);
         add(createRegistrationLink());
@@ -38,14 +37,14 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     private void auth(String username, String password) {
         if (userService.auth(username, password)) {
-            getUI().ifPresent(ui -> ui.navigate("dashboard")); // Redirect to the dashboard after successful login
+            UI.getCurrent().navigate("register");
         } else {
             login.setError(true);
         }
     }
 
     private Anchor createRegistrationLink() {
-        Anchor registrationLink = new Anchor("/register", "Don't have an account? Register here");
+        Anchor registrationLink = new Anchor("register", "Don't have an account? Register here");
         return registrationLink;
     }
 
