@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,7 +18,17 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
     @SequenceGenerator(name = "user_seq", sequenceName = "user_seq", allocationSize = 1)
-    Long id;
+    Integer id;
 
-    String username, password;
+    String email;
+    String password;
+    @ManyToMany
+    @JoinTable(
+            name = "user_roles",  // Specify the name of the join table
+            joinColumns = @JoinColumn(name = "user_id"),  // Name of the column in this table (users) that references the join table
+            inverseJoinColumns = @JoinColumn(name = "role_code")  // Name of the column in the related table (roles) that references the join table
+    )
+    private List<Role> roles;
+
+
 }

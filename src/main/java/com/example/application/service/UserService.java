@@ -19,15 +19,15 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void registerUser(String username, String password) {
+    public void registerUser(String email, String password) {
         User user = new User();
-        user.setUsername(username);
+        user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
     }
 
-    public boolean auth(String username, String password) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
+    public boolean auth(String email, String password) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
         return userOptional.map(user -> passwordEncoder.matches(password, user.getPassword())).orElse(false);
     }
 }
