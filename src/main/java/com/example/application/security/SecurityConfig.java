@@ -41,8 +41,6 @@ public class SecurityConfig extends VaadinWebSecurity {
     }
 
 
-
-
     @Bean
     public UserDetailsService userDetailsService() {
         return email -> (UserDetails) repository.findByEmail(email)
