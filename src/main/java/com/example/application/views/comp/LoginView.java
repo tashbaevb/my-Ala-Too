@@ -37,7 +37,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     private void auth(String email, String password) {
         if (userService.auth(email, password)) {
-            UI.getCurrent().navigate("register");
+            UI.getCurrent().navigate(MainView.class);
         } else {
             login.setError(true);
         }
