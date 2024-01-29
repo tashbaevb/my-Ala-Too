@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!-- Project from https://start.vaadin.com/project/09906217-5503-4559-b9d0-13cfd2e3c87f -->
     <groupId>com.example.application</groupId>
@@ -13,6 +13,7 @@
         <java.version>19</java.version>
         <vaadin.version>24.3.3</vaadin.version>
     </properties>
+
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -43,6 +44,16 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+
+        <!--        <dependency>-->
+        <!--            <groupId>org.flywaydb</groupId>-->
+        <!--            <artifactId>flyway-core</artifactId>-->
+        <!--            <version>10.5.0</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>com.vaadin</groupId>
             <!-- Replace artifactId with vaadin-core to use only free components -->
@@ -94,10 +105,18 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-
+        <!--security-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
         </dependency>
     </dependencies>
 
