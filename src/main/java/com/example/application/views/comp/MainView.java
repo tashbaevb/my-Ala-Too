@@ -8,7 +8,9 @@ import com.example.application.repo.NationalityRepository;
 import com.example.application.service.MainService;
 import com.example.application.service.MainViewFormData;
 import com.example.application.views.MainLayout;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -16,6 +18,7 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
@@ -75,12 +78,69 @@ public class MainView extends Composite<VerticalLayout> {
         MainViewFormData formData = gatherFormData();
         System.out.println(formData.toString() + "\n\n");
 
-        if (formData.getName() != null) {
+        if (isFormDataValid(formData)) {
             mainService.saveData(formData);
         } else {
-            System.out.println("name is null");
+            System.out.println("Please fill in all required fields");
         }
     }
+
+    private boolean isFormDataValid(MainViewFormData formData) {
+        if (formData.getName() == null || formData.getName().isEmpty()) {
+            showFieldRequiredWarning(textField);
+            return false;
+        } else if (formData.getSurname() == null || formData.getSurname().isEmpty()) {
+            showFieldRequiredWarning(textField2);
+            return false;
+        } else if (formData.getNameNative() == null || formData.getNameNative().isEmpty()) {
+            showFieldRequiredWarning(textField3);
+            return false;
+        } else if (formData.getSurnameNative() == null || formData.getSurnameNative().isEmpty()) {
+            showFieldRequiredWarning(textField4);
+            return false;
+        } else if (formData.getPatronymic() == null || formData.getPatronymic().isEmpty()) {
+            showFieldRequiredWarning(textField5);
+            return false;
+        } else if (formData.getBirthDate() == null || formData.getBirthDate().isEmpty()) {
+            showFieldRequiredWarning(datePicker);
+            return false;
+        } else if (formData.getCitizenship() == null || formData.getCitizenship().isEmpty()) {
+            showFieldRequiredWarning(citizenshipSelect);
+            return false;
+        } else if (formData.getNationality() == null || formData.getNationality().isEmpty()) {
+            showFieldRequiredWarning(nationalitySelect);
+            return false;
+        } else if (formData.getGender() == null || formData.getGender().isEmpty()) {
+            showFieldRequiredWarning(checkbox2);
+            return false;
+        } else if (formData.getMaritalStatus() == null || formData.getMaritalStatus().isEmpty()) {
+            showFieldRequiredWarning(checkbox4);
+            return false;
+        } else if (formData.getIin() == null || formData.getIin().isEmpty()) {
+            showFieldRequiredWarning(textField6);
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+    private void showFieldRequiredWarning(Component field) {
+        if (field instanceof TextField) {
+            ((TextField) field).setInvalid(true);
+            ((TextField) field).setErrorMessage("This field is required");
+        } else if (field instanceof Select) {
+            ((Select<?>) field).setInvalid(true);
+            ((Select<?>) field).setErrorMessage("This field is required");
+        } else if (field instanceof DatePicker) {
+            ((DatePicker) field).setInvalid(true);
+            ((DatePicker) field).setErrorMessage("This field is required");
+        } else if (field instanceof Checkbox) {
+            ((Checkbox) field).getStyle().set("color", "red");
+        }
+    }
+
 
     private MainViewFormData gatherFormData() {
         MainViewFormData formData = new MainViewFormData();
@@ -163,11 +223,8 @@ public class MainView extends Composite<VerticalLayout> {
         h3.setWidth("100%");
 
         textField.setLabel("First Name");
-
         textField2.setLabel("Last Name");
-
         textField3.setLabel("Native Name");
-
         textField4.setLabel("Native Surname");
 
         layoutRow.setWidthFull();
@@ -260,16 +317,17 @@ public class MainView extends Composite<VerticalLayout> {
 
 
         layoutColumn2.add(h3);
-        layoutColumn2.add(textField);
-        layoutColumn2.add(textField2);
-        layoutColumn2.add(textField3);
-        layoutColumn2.add(textField4);
+        layoutColumn2.add(createLabeledTextField(textField));
+        layoutColumn2.add(createLabeledTextField(textField2));
+        layoutColumn2.add(createLabeledTextField(textField3));
+        layoutColumn2.add(createLabeledTextField(textField4));
+
         layoutColumn2.add(layoutRow);
-        layoutRow.add(textField5);
+        layoutRow.add(createLabeledTextField(textField5));
         layoutRow.add(checkbox);
-        layoutColumn2.add(datePicker);
-        layoutColumn2.add(citizenshipSelect);
-        layoutColumn2.add(nationalitySelect);
+        layoutColumn2.add(createLabeledTextField(datePicker));
+        layoutColumn2.add(createLabeledTextField(citizenshipSelect));
+        layoutColumn2.add(createLabeledTextField(nationalitySelect));
         layoutColumn2.add(layoutRow2);
         layoutRow2.add(textMedium);
         layoutRow2.add(checkbox2);
@@ -278,16 +336,36 @@ public class MainView extends Composite<VerticalLayout> {
         layoutRow3.add(textMedium2);
         layoutRow3.add(checkbox4);
         layoutRow3.add(checkbox5);
-        layoutColumn2.add(textField6);
-        layoutColumn2.add(textField7);
-        layoutColumn2.add(select3);
-        layoutColumn2.add(textField8);
-        layoutColumn2.add(textField9);
-        layoutColumn2.add(datePicker2);
+        layoutColumn2.add(createLabeledTextField(textField6));
+        layoutColumn2.add(createLabeledTextField(textField7));
+        layoutColumn2.add(createLabeledTextField(select3));
+        layoutColumn2.add(createLabeledTextField(textField8));
+        layoutColumn2.add(createLabeledTextField(textField9));
+        layoutColumn2.add(createLabeledTextField(datePicker2));
         getContent().add(layoutRow4);
         layoutRow4.add(buttonPrimary);
         layoutRow4.add(buttonSecondary);
     }
+
+    private HorizontalLayout createLabeledTextField(TextField textField) {
+        return createLabeledComponent(textField);
+    }
+
+    private HorizontalLayout createLabeledTextField(Select select) {
+        return createLabeledComponent(select);
+    }
+
+    private HorizontalLayout createLabeledTextField(DatePicker datePicker) {
+        return createLabeledComponent(datePicker);
+    }
+
+    private HorizontalLayout createLabeledComponent(Component component) {
+        HorizontalLayout wrapper = new HorizontalLayout();
+        wrapper.add(component, new Html("<span style='color: red;'>*</span>"));
+        wrapper.setAlignItems(FlexComponent.Alignment.BASELINE);
+        return wrapper;
+    }
+
 
     private void setNationalitySelect(Select nationalitySelect) {
         List<Nationality> nationalities = nationalityRepository.findAll();
