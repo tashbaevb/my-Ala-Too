@@ -4,7 +4,6 @@ import com.example.application.entity.Address;
 import com.example.application.entity.Nationality;
 import com.example.application.exception.BadRequestException;
 import com.example.application.repo.AddressRepository;
-import com.example.application.repo.AddressTypeRepository;
 import com.example.application.repo.NationalityRepository;
 import com.example.application.service.MainService;
 import com.example.application.service.MainViewFormData;
@@ -42,88 +41,73 @@ public class MainView extends Composite<VerticalLayout> {
 
     private final AddressRepository addressRepository;
     private final NationalityRepository nationalityRepository;
-    private final AddressTypeRepository addressTypeRepository;
 
     private final MainService mainService;
 
-    VerticalLayout layoutColumn2 = new VerticalLayout();
-    H3 h3 = new H3();
-    TextField textField = new TextField();
-    TextField textField2 = new TextField();
-    TextField textField3 = new TextField();
-    TextField textField4 = new TextField();
-    HorizontalLayout layoutRow = new HorizontalLayout();
-    TextField textField5 = new TextField();
-    Checkbox checkbox = new Checkbox();
-    DatePicker datePicker = new DatePicker();
-    Select citizenshipSelect = new Select();
-    Select nationalitySelect = new Select();
-    Select militarySelect = new Select();
-    HorizontalLayout layoutRow2 = new HorizontalLayout();
-    Paragraph textMedium = new Paragraph();
-    Checkbox checkbox2 = new Checkbox();
-    Checkbox checkbox3 = new Checkbox();
-    HorizontalLayout layoutRow3 = new HorizontalLayout();
-    Paragraph textMedium2 = new Paragraph();
-    Checkbox checkbox4 = new Checkbox();
-    Checkbox checkbox5 = new Checkbox();
-    TextField textField6 = new TextField();
-    TextField textField7 = new TextField();
-    Select select3 = new Select();
-    TextField textField8 = new TextField();
-    TextField textField9 = new TextField();
-    DatePicker datePicker2 = new DatePicker();
-    HorizontalLayout layoutRow4 = new HorizontalLayout();
-    Button buttonPrimary = new Button();
-    Button buttonSecondary = new Button();
-
-    public MainView(AddressRepository addressRepository, NationalityRepository nationalityRepository, AddressTypeRepository addressTypeRepository, MainService mainService) {
+    public MainView(AddressRepository addressRepository, NationalityRepository nationalityRepository, MainService mainService) {
         this.addressRepository = addressRepository;
         this.nationalityRepository = nationalityRepository;
-        this.addressTypeRepository = addressTypeRepository;
         this.mainService = mainService;
         initLayout();
     }
 
-    private void initLayout() {
+    TextField textField = new TextField();
+    TextField textField2 = new TextField();
+    TextField textField3 = new TextField();
+    TextField textField4 = new TextField();
+    TextField textField5 = new TextField();
+    DatePicker datePicker = new DatePicker();
+    Select citizenshipSelect = new Select();
+    Select nationalitySelect = new Select();
+    Select militarySelect = new Select();
+    Checkbox checkbox2 = new Checkbox();
+    Checkbox checkbox4 = new Checkbox();
+    TextField textField6 = new TextField();
 
+
+    private void initLayout() {
         mainPage();
     }
-
 
 
     private void saveData() {
         System.out.println("saveData is working\n\n");
         MainViewFormData formData = gatherFormData();
         System.out.println(formData.toString() + "\n\n");
-        mainService.saveData(formData);
+
+        if (formData.getName() != null) {
+            mainService.saveData(formData);
+        } else {
+            System.out.println("name is null");
+        }
     }
 
     private MainViewFormData gatherFormData() {
         MainViewFormData formData = new MainViewFormData();
         formData.setName(textField.getValue());
+        System.out.println("formData Name " + textField.getValue());
         formData.setSurname(textField2.getValue());
         formData.setNameNative(textField3.getValue());
         formData.setSurnameNative(textField4.getValue());
         formData.setPatronymic(textField5.getValue());
-        formData.setBirthDate(datePicker.getValue() != null ? datePicker.getValue().toString() : null); // исправлено
+        formData.setBirthDate(datePicker.getValue() != null ? datePicker.getValue().toString() : null);
         SampleItem sampleItem = (SampleItem) citizenshipSelect.getValue();
 
-        System.out.println("the address: "+sampleItem.value);
+        System.out.println("the address: " + sampleItem.value);
         Optional<Address> citizenship = addressRepository.findByTitleKgOrTitleRuOrTitleEn(sampleItem.value,
-                sampleItem.value,sampleItem.value);
+                sampleItem.value, sampleItem.value);
         if (citizenship.isEmpty())
             throw new BadRequestException("no address with this name!");
         formData.setCitizenship(sampleItem.value);
         SampleItem nationalityItem = (SampleItem) nationalitySelect.getValue();
 
-        formData.setNationality(nationalityItem.value); // исправлено
+        formData.setNationality(nationalityItem.value);
         System.out.println(militarySelect.getValue());
         SampleItem militaryItem = (SampleItem) militarySelect.getValue();
-        if (militaryItem!=null)
+        if (militaryItem != null)
             formData.setMilitary(militaryItem.value);
-        formData.setGender(checkbox2.getValue() ? "Male" : "Female"); // исправлено
-        formData.setMaritalStatus(checkbox4.getValue() ? "Single" : "Married"); // исправлено
+        formData.setGender(checkbox2.getValue() ? "Male" : "Female");
+        formData.setMaritalStatus(checkbox4.getValue() ? "Single" : "Married");
         formData.setIin(textField6.getValue());
         return formData;
     }
@@ -141,28 +125,11 @@ public class MainView extends Composite<VerticalLayout> {
     record SampleItem(String value, String label, Boolean disabled) {
     }
 
-    private void setCitizenshipSelect(Select select) {
-        List<Address> citizenship = addressRepository.findAll();
-
-        List<SampleItem> sampleItems = new ArrayList<>();
-        for (Address address: citizenship){
-            sampleItems.add(new SampleItem(address.getTitleEn(), address.getTitleEn(), null));
-        }
-        select.setItems(sampleItems);
-        select.setItemLabelGenerator(item -> ((SampleItem) item).label());
-        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
-    }
     private void mainPage() {
         VerticalLayout layoutColumn2 = new VerticalLayout();
         H3 h3 = new H3();
-        TextField textField = new TextField();
-        TextField textField2 = new TextField();
-        TextField textField3 = new TextField();
-        TextField textField4 = new TextField();
         HorizontalLayout layoutRow = new HorizontalLayout();
-        TextField textField5 = new TextField();
         Checkbox checkbox = new Checkbox();
-        DatePicker datePicker = new DatePicker();
 
         HorizontalLayout layoutRow2 = new HorizontalLayout();
         Paragraph textMedium = new Paragraph();
@@ -268,7 +235,7 @@ public class MainView extends Composite<VerticalLayout> {
 
         select3.setLabel("Document Type:");
         select3.setWidth("min-content");
-       // setSelectSampleData(select3);
+        // setSelectSampleData(select3);
 
         textField8.setLabel("Document no:");
 
@@ -326,7 +293,7 @@ public class MainView extends Composite<VerticalLayout> {
         List<Nationality> nationalities = nationalityRepository.findAll();
 
         List<SampleItem> sampleItems = new ArrayList<>();
-        for (Nationality nationality: nationalities){
+        for (Nationality nationality : nationalities) {
             sampleItems.add(new SampleItem(nationality.getTitleEn(), nationality.getTitleEn(), null));
         }
         nationalitySelect.setItems(sampleItems);
@@ -334,4 +301,15 @@ public class MainView extends Composite<VerticalLayout> {
         nationalitySelect.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
     }
 
+    private void setCitizenshipSelect(Select select) {
+        List<Address> citizenship = addressRepository.findAll();
+
+        List<SampleItem> sampleItems = new ArrayList<>();
+        for (Address address : citizenship) {
+            sampleItems.add(new SampleItem(address.getTitleEn(), address.getTitleEn(), null));
+        }
+        select.setItems(sampleItems);
+        select.setItemLabelGenerator(item -> ((SampleItem) item).label());
+        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
+    }
 }

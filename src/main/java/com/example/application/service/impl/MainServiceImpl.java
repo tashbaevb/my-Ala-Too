@@ -25,33 +25,27 @@ public class MainServiceImpl implements MainService {
 
     @Override
     public void saveData(MainViewFormData formData) {
-        System.out.println("tyhe citizenship:1121"+formData.getCitizenship());
+        System.out.println("tyhe citizenship:1121" + formData.getCitizenship());
 
-        Optional<Address>  address = addressRepository.findByTitleEn(formData.getCitizenship());
-        if (address.isEmpty()){
+        Optional<Address> address = addressRepository.findByTitleEn(formData.getCitizenship());
+        if (address.isEmpty()) {
             System.out.println("address is null" + address.get());
-        }
-        else {
+        } else {
             System.out.println("address is not null");
             System.out.println(address.get().getTitleEn());
         }
-        Optional<Nationality>   nationality = nationalityRepository.findByTitleEn(formData.getNationality());
-        Optional<Gender>   gender = genderRepository.findByTitleEn(formData.getGender());
+        Optional<Nationality> nationality = nationalityRepository.findByTitleEn(formData.getNationality());
+        Optional<Gender> gender = genderRepository.findByTitleEn(formData.getGender());
         Optional<MaritalStatus> maritalStatus = maritalStatusRepository.findByTitleEn(formData.getMaritalStatus());
-        Optional<Military>   military = militaryRepository.findByTitleEn(formData.getMilitary());
-
-
-
-
-
-
-
-
+        Optional<Military> military = militaryRepository.findByTitleEn(formData.getMilitary());
 
 
         Applicant applicant = new Applicant();
+        System.out.println("Applicant start");
         applicant.setName(formData.getName());
+        System.out.println("applicant name " + formData.getName());
         applicant.setSurname(formData.getSurname());
+        System.out.println("applicant surname " + formData.getSurname());
         applicant.setName_native(formData.getNameNative());
         applicant.setSurname_native(formData.getSurnameNative());
         applicant.setPatronymic(formData.getPatronymic());
