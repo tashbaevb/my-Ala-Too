@@ -21,13 +21,15 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+import jakarta.annotation.security.PermitAll;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @PageTitle("Person Form")
 @Route(value = "main", layout = MainLayout.class)
 @Uses(Icon.class)
-@AnonymousAllowed
+@PermitAll
 public class MainView extends Composite<VerticalLayout> {
 
     public MainView() {
