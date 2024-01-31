@@ -1,5 +1,11 @@
 package com.example.application.views.comp;
 
+import com.example.application.entity.Address;
+import com.example.application.entity.Nationality;
+import com.example.application.exception.BadRequestException;
+import com.example.application.repo.AddressRepository;
+import com.example.application.repo.AddressTypeRepository;
+import com.example.application.repo.NationalityRepository;
 import com.example.application.service.MainService;
 import com.example.application.service.MainViewFormData;
 import com.example.application.views.MainLayout;
@@ -21,18 +27,22 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.PermitAll;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @PageTitle("Person Form")
 @Route(value = "main", layout = MainLayout.class)
 @Uses(Icon.class)
 @PermitAll
 public class MainView extends Composite<VerticalLayout> {
+
+    private final AddressRepository addressRepository;
+    private final NationalityRepository nationalityRepository;
+    private final AddressTypeRepository addressTypeRepository;
 
     private final MainService mainService;
 
@@ -46,8 +56,9 @@ public class MainView extends Composite<VerticalLayout> {
     TextField textField5 = new TextField();
     Checkbox checkbox = new Checkbox();
     DatePicker datePicker = new DatePicker();
-    Select select = new Select();
-    Select select2 = new Select();
+    Select citizenshipSelect = new Select();
+    Select nationalitySelect = new Select();
+    Select militarySelect = new Select();
     HorizontalLayout layoutRow2 = new HorizontalLayout();
     Paragraph textMedium = new Paragraph();
     Checkbox checkbox2 = new Checkbox();
@@ -66,13 +77,82 @@ public class MainView extends Composite<VerticalLayout> {
     Button buttonPrimary = new Button();
     Button buttonSecondary = new Button();
 
-    public MainView(MainService mainService) {
+    public MainView(AddressRepository addressRepository, NationalityRepository nationalityRepository, AddressTypeRepository addressTypeRepository, MainService mainService) {
+        this.addressRepository = addressRepository;
+        this.nationalityRepository = nationalityRepository;
+        this.addressTypeRepository = addressTypeRepository;
         this.mainService = mainService;
         initLayout();
     }
 
     private void initLayout() {
 
+        mainPage();
+    }
+
+
+
+    private void saveData() {
+        System.out.println("saveData is working\n\n");
+        MainViewFormData formData = gatherFormData();
+        System.out.println(formData.toString() + "\n\n");
+        mainService.saveData(formData);
+    }
+
+    private MainViewFormData gatherFormData() {
+        MainViewFormData formData = new MainViewFormData();
+        formData.setName(textField.getValue());
+        formData.setSurname(textField2.getValue());
+        formData.setNameNative(textField3.getValue());
+        formData.setSurnameNative(textField4.getValue());
+        formData.setPatronymic(textField5.getValue());
+        formData.setBirthDate(datePicker.getValue() != null ? datePicker.getValue().toString() : null); // исправлено
+        SampleItem sampleItem = (SampleItem) citizenshipSelect.getValue();
+
+        System.out.println("the address: "+sampleItem.value);
+        Optional<Address> citizenship = addressRepository.findByTitleKgOrTitleRuOrTitleEn(sampleItem.value,
+                sampleItem.value,sampleItem.value);
+        if (citizenship.isEmpty())
+            throw new BadRequestException("no address with this name!");
+        formData.setCitizenship(sampleItem.value);
+        SampleItem nationalityItem = (SampleItem) nationalitySelect.getValue();
+
+        formData.setNationality(nationalityItem.value); // исправлено
+        System.out.println(militarySelect.getValue());
+        SampleItem militaryItem = (SampleItem) militarySelect.getValue();
+        if (militaryItem!=null)
+            formData.setMilitary(militaryItem.value);
+        formData.setGender(checkbox2.getValue() ? "Male" : "Female"); // исправлено
+        formData.setMaritalStatus(checkbox4.getValue() ? "Single" : "Married"); // исправлено
+        formData.setIin(textField6.getValue());
+        return formData;
+    }
+
+
+    private void clearForm() {
+        textField.setValue("");
+        textField2.setValue("");
+        textField3.setValue("");
+        textField4.setValue("");
+        textField5.setValue("");
+        textField6.setValue("");
+    }
+
+    record SampleItem(String value, String label, Boolean disabled) {
+    }
+
+    private void setCitizenshipSelect(Select select) {
+        List<Address> citizenship = addressRepository.findAll();
+
+        List<SampleItem> sampleItems = new ArrayList<>();
+        for (Address address: citizenship){
+            sampleItems.add(new SampleItem(address.getTitleEn(), address.getTitleEn(), null));
+        }
+        select.setItems(sampleItems);
+        select.setItemLabelGenerator(item -> ((SampleItem) item).label());
+        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
+    }
+    private void mainPage() {
         VerticalLayout layoutColumn2 = new VerticalLayout();
         H3 h3 = new H3();
         TextField textField = new TextField();
@@ -83,8 +163,7 @@ public class MainView extends Composite<VerticalLayout> {
         TextField textField5 = new TextField();
         Checkbox checkbox = new Checkbox();
         DatePicker datePicker = new DatePicker();
-        Select select = new Select();
-        Select select2 = new Select();
+
         HorizontalLayout layoutRow2 = new HorizontalLayout();
         Paragraph textMedium = new Paragraph();
         Checkbox checkbox2 = new Checkbox();
@@ -139,13 +218,13 @@ public class MainView extends Composite<VerticalLayout> {
 
         datePicker.setLabel("Date of birth:");
 
-        select.setLabel("Citizenship");
-        select.setWidth("min-content");
-        setSelectSampleData(select);
+        citizenshipSelect.setLabel("Citizenship");
+        citizenshipSelect.setWidth("min-content");
+        setCitizenshipSelect(citizenshipSelect);
 
-        select2.setLabel("Nationality:");
-        select2.setWidth("min-content");
-        setSelectSampleData(select2);
+        nationalitySelect.setLabel("Nationality:");
+        nationalitySelect.setWidth("min-content");
+        setNationalitySelect(nationalitySelect);
 
         layoutRow2.setWidthFull();
         layoutColumn2.setFlexGrow(1.0, layoutRow2);
@@ -189,7 +268,7 @@ public class MainView extends Composite<VerticalLayout> {
 
         select3.setLabel("Document Type:");
         select3.setWidth("min-content");
-        setSelectSampleData(select3);
+       // setSelectSampleData(select3);
 
         textField8.setLabel("Document no:");
 
@@ -222,8 +301,8 @@ public class MainView extends Composite<VerticalLayout> {
         layoutRow.add(textField5);
         layoutRow.add(checkbox);
         layoutColumn2.add(datePicker);
-        layoutColumn2.add(select);
-        layoutColumn2.add(select2);
+        layoutColumn2.add(citizenshipSelect);
+        layoutColumn2.add(nationalitySelect);
         layoutColumn2.add(layoutRow2);
         layoutRow2.add(textMedium);
         layoutRow2.add(checkbox2);
@@ -243,49 +322,16 @@ public class MainView extends Composite<VerticalLayout> {
         layoutRow4.add(buttonSecondary);
     }
 
+    private void setNationalitySelect(Select nationalitySelect) {
+        List<Nationality> nationalities = nationalityRepository.findAll();
 
-    private void saveData() {
-        MainViewFormData formData = gatherFormData();
-        mainService.saveData(formData);
-    }
-
-    private MainViewFormData gatherFormData() {
-        MainViewFormData formData = new MainViewFormData();
-        formData.setName(textField.getValue());
-        formData.setSurname(textField2.getValue());
-        formData.setNameNative(textField3.getValue());
-        formData.setSurnameNative(textField4.getValue());
-        formData.setPatronymic(textField5.getValue());
-        formData.setBirthDate(datePicker.getValue() != null ? datePicker.getValue().toString() : null); // исправлено
-        formData.setCitizenship(((SampleItem) select.getValue()).label()); // исправлено
-        formData.setNationality(((SampleItem) select2.getValue()).label()); // исправлено
-        formData.setGender(checkbox2.getValue() ? "Male" : "Female"); // исправлено
-        formData.setMaritalStatus(checkbox4.getValue() ? "Single" : "Married"); // исправлено
-        formData.setIin(textField6.getValue());
-        return formData;
-    }
-
-
-    private void clearForm() {
-        textField.setValue("");
-        textField2.setValue("");
-        textField3.setValue("");
-        textField4.setValue("");
-        textField5.setValue("");
-        textField6.setValue("");
-    }
-
-    record SampleItem(String value, String label, Boolean disabled) {
-    }
-
-    private void setSelectSampleData(Select select) {
         List<SampleItem> sampleItems = new ArrayList<>();
-        sampleItems.add(new SampleItem("first", "First", null));
-        sampleItems.add(new SampleItem("second", "Second", null));
-        sampleItems.add(new SampleItem("third", "Third", Boolean.TRUE));
-        sampleItems.add(new SampleItem("fourth", "Fourth", null));
-        select.setItems(sampleItems);
-        select.setItemLabelGenerator(item -> ((SampleItem) item).label());
-        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
+        for (Nationality nationality: nationalities){
+            sampleItems.add(new SampleItem(nationality.getTitleEn(), nationality.getTitleEn(), null));
+        }
+        nationalitySelect.setItems(sampleItems);
+        nationalitySelect.setItemLabelGenerator(item -> ((SampleItem) item).label());
+        nationalitySelect.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
     }
+
 }

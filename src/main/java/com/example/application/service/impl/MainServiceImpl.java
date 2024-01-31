@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -15,54 +16,38 @@ public class MainServiceImpl implements MainService {
 
     private final ApplicantRepository applicantRepository;
     private final StudInfoRepository studInfoRepository;
-    private final AddressRepository addressRepository;
-    private final AddressTypeRepository addressTypeRepository;
-    private final NationalityRepository nationalityRepository;
     private final GenderRepository genderRepository;
+    private final AddressRepository addressRepository;
+    private final NationalityRepository nationalityRepository;
     private final MaritalStatusRepository maritalStatusRepository;
     private final MilitaryRepository militaryRepository;
 
 
     @Override
     public void saveData(MainViewFormData formData) {
+        System.out.println("tyhe citizenship:1121"+formData.getCitizenship());
 
-        AddressType addressType = new AddressType();
-        addressType.setTitleKg("TypeKg");
-        addressType.setTitleRu("TypeRu");
-        addressType.setTitleEn("TypeEn");
-        addressTypeRepository.save(addressType);
+        Optional<Address>  address = addressRepository.findByTitleEn(formData.getCitizenship());
+        if (address.isEmpty()){
+            System.out.println("address is null" + address.get());
+        }
+        else {
+            System.out.println("address is not null");
+            System.out.println(address.get().getTitleEn());
+        }
+        Optional<Nationality>   nationality = nationalityRepository.findByTitleEn(formData.getNationality());
+        Optional<Gender>   gender = genderRepository.findByTitleEn(formData.getGender());
+        Optional<MaritalStatus> maritalStatus = maritalStatusRepository.findByTitleEn(formData.getMaritalStatus());
+        Optional<Military>   military = militaryRepository.findByTitleEn(formData.getMilitary());
 
-        Address address = new Address();
-        address.setAddressType(addressType);
-        address.setP(null);
-        address.setTitleKg("TitleKg");
-        address.setTitleRu("TitleRu");
-        address.setTitleEn("TitleEn");
-        addressRepository.save(address);
 
-        Nationality nationality = new Nationality();
-        nationality.setTitleKg("NatKg");
-        nationality.setTitleRu("NatRu");
-        nationality.setTitleEn("NatEn");
-        nationalityRepository.save(nationality);
 
-        Gender gender = new Gender();
-        gender.setTitleKg("GenderKg");
-        gender.setTitleRu("GenderRu");
-        gender.setTitleEn("GenderEn");
-        genderRepository.save(gender);
 
-        MaritalStatus maritalStatus = new MaritalStatus();
-        maritalStatus.setTitleKg("MaritalKg");
-        maritalStatus.setTitleRu("MaritalRu");
-        maritalStatus.setTitleEn("MaritalEn");
-        maritalStatusRepository.save(maritalStatus);
 
-        Military military = new Military();
-        military.setTitleKg("MilitaryKg");
-        military.setTitleRu("MilitaryRu");
-        military.setTitleEn("MilitaryEn");
-        militaryRepository.save(military);
+
+
+
+
 
         Applicant applicant = new Applicant();
         applicant.setName(formData.getName());
@@ -75,12 +60,24 @@ public class MainServiceImpl implements MainService {
         StudInfo studInfo = new StudInfo();
         studInfo.setApplicant(applicant);
         studInfo.setBirthDate(new Date());
-        studInfo.setCitizenship(address);
-        studInfo.setNationality(nationality);
-        studInfo.setGender(gender);
-        studInfo.setMaritalStatus(maritalStatus);
+        studInfo.setCitizenship(address.get());
+        studInfo.setNationality(nationality.get());
+        if (gender.isPresent())
+            studInfo.setGender(gender.get());
+        else {
+            System.out.println("gender is null");
+        }
+        if (maritalStatus.isPresent())
+            studInfo.setMaritalStatus(maritalStatus.get());
+        else {
+            System.out.println("marital is null");
+        }
         studInfo.setIin(formData.getIin());
-        studInfo.setMilitary(military);
+        if (military.isPresent())
+            studInfo.setMilitary(military.get());
+        else {
+            System.out.println("military is null");
+        }
         studInfoRepository.save(studInfo);
     }
 }

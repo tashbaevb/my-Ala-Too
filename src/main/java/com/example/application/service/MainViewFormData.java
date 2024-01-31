@@ -21,5 +21,6 @@ public class MainViewFormData {
     private String nationality;
     private String gender;
     private String maritalStatus;
+    private String military;
     private String iin;
 }
