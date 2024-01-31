@@ -20,5 +20,4 @@ public class Applicant {
     private String patronymic;
     private String name_native;
     private String surname_native;
-
 }
