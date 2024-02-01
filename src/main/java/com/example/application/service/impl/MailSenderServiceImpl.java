@@ -2,8 +2,6 @@ package com.example.application.service.impl;
 
 import com.example.application.service.MailSenderService;
 import lombok.AllArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;

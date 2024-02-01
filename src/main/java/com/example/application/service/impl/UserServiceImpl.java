@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
 
-        mailSenderService.ss(user.getEmail(), "confirm ur email","\n\nhttp://localhost:8977/confirm/"+confirmCode);
+        mailSenderService.ss(user.getEmail(), "confirm ur email","\n\nhttp://localhost:8084/confirm/"+confirmCode);
 
 
     }
