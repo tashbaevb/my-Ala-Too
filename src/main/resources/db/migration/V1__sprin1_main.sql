@@ -64,6 +64,7 @@ create table if not exists users(
     is_active boolean not null , -- is_active
     attempt_count int,
     attempt_date date,
+    confirm_code varchar(50) not null ,
     web_lan_code char(2) references language(code),
     last_login_info_id int references web_log(id)
     );
@@ -91,5 +92,3 @@ create table if not exists stud_info(
 create table if not exists user_roles (user_id int references users(id),
     role_code varchar(10) references role(code)
     );
-
-

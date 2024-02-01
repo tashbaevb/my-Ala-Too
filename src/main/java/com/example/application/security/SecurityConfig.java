@@ -33,6 +33,9 @@ public class SecurityConfig extends VaadinWebSecurity {
 
         http.authorizeHttpRequests(
                 authorize -> authorize.requestMatchers(new AntPathRequestMatcher("/images/*.png")).permitAll());
+        http.authorizeHttpRequests(
+                authorize -> authorize.requestMatchers(new AntPathRequestMatcher("/confirm/**")).permitAll());
+
 
         // Icons from the line-awesome addon
         http.authorizeHttpRequests(

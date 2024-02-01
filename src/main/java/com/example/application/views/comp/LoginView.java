@@ -5,6 +5,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.login.LoginForm;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -36,11 +37,16 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     }
 
     private void auth(String email, String password) {
-        if (userService.auth(email, password)) {
-            UI.getCurrent().navigate(MainView.class);
-        } else {
-            login.setError(true);
+        try {
+            userService.auth(email, password);
+            UI.getCurrent().navigate("main");
+
         }
+        catch (Exception e){
+            login.setError(true);
+            Notification.show(e.getMessage());
+        }
+
     }
 
     private Anchor createRegistrationLink() {

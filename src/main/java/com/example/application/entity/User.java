@@ -29,6 +29,7 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private LocalDateTime regDate;
+    private String confirmCode;
     private Boolean isActive;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
