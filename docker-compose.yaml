@@ -1,0 +1,33 @@
+version: '2.1'
+
+services:
+  my-app:
+    image: nginx:latest
+    ports:
+      - 8000:8000
+    depends_on:
+      - flyway
+
+  flyway:
+    image: boxfuse/flyway:5-alpine
+    command: -url=jdbc:postgresql://postgres:5432/pms -schemas=public -user=postgres -password=1234 migrate
+    volumes:
+      - ./src/main/resources/db/migration:/flyway/sql
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    domainname: postgres
+    build: .
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-U", "postgres" ]
+      interval: 5s
+      timeout: 30s   # Adjust the timeout value
+      retries: 2
+

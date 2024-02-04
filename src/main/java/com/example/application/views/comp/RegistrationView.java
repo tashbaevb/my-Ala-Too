@@ -16,6 +16,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 @AnonymousAllowed
 public class RegistrationView extends VerticalLayout {
 
+
     private final UserService userService;
 
     public RegistrationView(UserService userService) {
